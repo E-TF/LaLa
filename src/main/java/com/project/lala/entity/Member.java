@@ -9,44 +9,38 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.lang.NonNull;
+
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "MEMBER")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
-
-	public enum Status {
-		DEFAULT, DELETED
-	}
 
 	@Id
 	@GeneratedValue
 	private Long id;
 
-	@Column(name = "login_id")
-	@NonNull
+	@Column(name = "login_id", nullable = false, length = 30)
 	private String loginId;
 
-	@NonNull
+	@Column(nullable = false, length = 30)
 	private String password;
 
+	@Column(length = 30)
 	private String nickname;
 
-	@NonNull
+	@Column(nullable = false, length = 100)
 	private String name;
 
-	@NonNull
+	@Column(nullable = false, length = 200)
 	private String email;
 
-	private Status status;
-
-	@Column(name = "is_certify")
-	private boolean isCertify;
-
-	@Column(name = "is_leave")
-	private boolean isLeave;
-
-	@Column(name = "registered_at")
+	@Column(name = "registered_at", nullable = false)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate registeredAt;
 
@@ -58,105 +52,41 @@ public class Member {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate deletedAt;
 
-	public Member() {
-	}
-
-	public Member(Long id, @NonNull String loginId, @NonNull String password, String nickname, @NonNull String name,
-		@NonNull String email, Status status, boolean isCertify, boolean isLeave, LocalDate registeredAt,
-		LocalDate updatedAt, LocalDate deletedAt) {
+	@Builder
+	public Member(Long id, String loginId, String password, String nickname, String name, String email) {
 		this.id = id;
 		this.loginId = loginId;
 		this.password = password;
 		this.nickname = nickname;
 		this.name = name;
 		this.email = email;
-		this.status = status;
-		this.isCertify = isCertify;
-		this.isLeave = isLeave;
-		this.registeredAt = registeredAt;
-		this.updatedAt = updatedAt;
-		this.deletedAt = deletedAt;
+		this.registeredAt = LocalDate.now();
 	}
 
-	public static Member createMember(String loginId, String password, String nickname, String name, String email,
-		LocalDate registeredAt) {
+	public static Member createMember(String loginId, String password, String nickname, String name, String email) {
 		Member member = new Member();
 		member.loginId = loginId;
 		member.password = password;
 		member.nickname = nickname;
 		member.name = name;
 		member.email = email;
-		member.registeredAt = registeredAt;
+		member.registeredAt = LocalDate.now();
 		return member;
 	}
 
-	public void updateMember(Long id, @NonNull String loginId, @NonNull String password, String nickname,
-		@NonNull String name, @NonNull String email, Status status, boolean isCertify, boolean isLeave,
-		LocalDate registeredAt, LocalDate updatedAt, LocalDate deletedAt) {
-		this.id = id;
-		this.loginId = loginId;
+	public void updatePassword(String password) {
 		this.password = password;
+	}
+
+	public void updateNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public void updateName(String name) {
 		this.name = name;
+	}
+
+	public void updateEmail(String email) {
 		this.email = email;
-		this.status = status;
-		this.isCertify = isCertify;
-		this.isLeave = isLeave;
-		this.registeredAt = registeredAt;
-		this.updatedAt = updatedAt;
-		this.deletedAt = deletedAt;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public String getLoginId() {
-		return loginId;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public String getNickname() {
-		return nickname;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public boolean isCertify() {
-		return isCertify;
-	}
-
-	public boolean isLeave() {
-		return isLeave;
-	}
-
-	public LocalDate getRegisteredAt() {
-		return registeredAt;
-	}
-
-	public LocalDate getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public LocalDate getDeletedAt() {
-		return deletedAt;
-	}
-
-	public void withdraw(boolean isLeave) {
-		this.isLeave = isLeave;
-		this.deletedAt = LocalDate.now();
 	}
 }

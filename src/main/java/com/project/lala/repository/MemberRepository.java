@@ -10,8 +10,9 @@ import com.project.lala.entity.Member;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-	List<Member> findById(String loginId);
+	List<Member> findById(long id);
 
 	List<Member> findByEmail(String email);
 
+	List<Member> findByLoginId(String loginId);
 }
