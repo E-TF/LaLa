@@ -1,14 +1,23 @@
 package com.project.lala.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.project.lala.common.member.MemberStatus;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,7 +37,7 @@ public class Member {
 	@Column(name = "login_id", nullable = false, length = 30)
 	private String loginId;
 
-	@Column(nullable = false, length = 30)
+	@Column(nullable = false)
 	private String password;
 
 	@Column(length = 30)
@@ -52,14 +61,20 @@ public class Member {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate deletedAt;
 
+	@ElementCollection(fetch = FetchType.LAZY)
+	@Enumerated(EnumType.STRING)
+	private List<MemberStatus> memberStatuses = new ArrayList<>();
+
 	@Builder
-	public Member(Long id, String loginId, String password, String nickname, String name, String email) {
+	public Member(Long id, String loginId, String password, String nickname, String name, String email,
+		List<MemberStatus> memberStatuses) {
 		this.id = id;
 		this.loginId = loginId;
 		this.password = password;
 		this.nickname = nickname;
 		this.name = name;
 		this.email = email;
+		this.memberStatuses = Collections.singletonList(MemberStatus.UNEMAILAUTH);
 		this.registeredAt = LocalDate.now();
 	}
 
@@ -72,6 +87,10 @@ public class Member {
 		member.email = email;
 		member.registeredAt = LocalDate.now();
 		return member;
+	}
+
+	public void addStatus(MemberStatus memberStatus) {
+		this.memberStatuses.add(memberStatus);
 	}
 
 	public void updatePassword(String password) {

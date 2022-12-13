@@ -42,13 +42,17 @@ public class SignUpRequestDto {
 	@Pattern(regexp = "[a-zA-z0-9]+@[a-zA-z]+[.]+[a-zA-z.]+", message = "이메일 형식을 올바르게 입력해주세요.")
 	private String email;
 
+	private String authToken;
+
 	@Builder
-	public SignUpRequestDto(String loginId, String password, String nickname, String name, String email) {
+	public SignUpRequestDto(String loginId, String password, String nickname, String name, String email,
+		String authToken) {
 		this.loginId = loginId;
 		this.password = password;
 		this.nickname = nickname;
 		this.name = name;
 		this.email = email;
+		this.authToken = authToken;
 	}
 
 	public Member createMember() {

@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.project.lala.common.encrytion.EncryptionService;
 import com.project.lala.dto.SignUpRequestDto;
 import com.project.lala.entity.Member;
 import com.project.lala.repository.MemberRepository;
@@ -26,6 +27,8 @@ class MemberServiceTest {
 	@Autowired
 	private MemberRepository memberRepository;
 	private SignUpRequestDto signUpRequestDto;
+	@Autowired
+	private EncryptionService encryptionService;
 
 	@BeforeEach
 	void beforeEach() {
@@ -42,7 +45,7 @@ class MemberServiceTest {
 	@Transactional
 	@Rollback(false)
 	public void signUp() {
-		Member joinMember = Member.createMember("test_id", "!@#test123",
+		Member joinMember = Member.createMember("test_id", encryptionService.encrypt("!@#test123"),
 			"test_nick", "test_name", "test_email@email.test");
 
 		Member signupMember = memberRepository.save(joinMember);
