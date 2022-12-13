@@ -1,0 +1,40 @@
+spring:
+  jpa: # hibernate 설정
+    generate-ddl: 'false'
+    database: mysql
+    hibernate:
+      naming:
+        strategy: org.hibernate.cfg.ImprovedNamingStrategy
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: create
+    show-sql: 'true' # 콘솔에 SQL 출력 여부
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: 'true'
+        format_sql: 'true'
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+  datasource: # DataSource
+    password: 비밀번호
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    url: jdbc:mysql://localhost:3306/lala?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+  mail: # Email 인증
+    host: smtp.gmail.com
+    port: 587
+    username: 이메일 아이디
+    password: 이메일 비밀번호
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+logging: # 로그 레벨 설정
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+server:
+  port: '8080'
+  servlet:
+    context-path: /
+    encoding:
+      charset: utf-8
+      enabled: true
+      force: true
