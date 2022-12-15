@@ -24,8 +24,11 @@ spring:
     username: 이메일 아이디
     password: 이메일 비밀번호
     properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
 logging: # 로그 레벨 설정
   level:
     org.hibernate.SQL: debug

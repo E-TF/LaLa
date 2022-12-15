@@ -17,11 +17,12 @@ public class EmailService {
 
 	@Async
 	public void sendEmail(String email, String authToken) {
+		String lala = "http://localhost:8080";
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 		mailMessage.setTo(email);
 		mailMessage.setSubject("회원가입 이메일 인증");
 		mailMessage.setText(
-			"http://localhost:8080/api/members/confirm-email?email=" + email + "&authToken=" + authToken);
+			lala + "/api/members/confirm-email?email=" + email + "&authToken=" + authToken);
 
 		javaMailSender.send(mailMessage);
 	}
