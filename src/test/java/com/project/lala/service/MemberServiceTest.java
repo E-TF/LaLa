@@ -55,3 +55,4 @@ class MemberServiceTest {
 		assertThat(findMemberId.get().getEmail()).isEqualTo(joinMember.getEmail());
 	}
 }
+

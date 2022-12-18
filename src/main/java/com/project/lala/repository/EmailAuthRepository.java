@@ -6,3 +6,4 @@ import com.project.lala.entity.EmailAuth;
 
 public interface EmailAuthRepository extends JpaRepository<EmailAuth, Long>, EmailAuthCustomRepository {
 }
+

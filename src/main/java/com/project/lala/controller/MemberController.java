@@ -35,3 +35,4 @@ public class MemberController {
 		memberService.confirmEmail(signUpRequestDto);
 	}
 }
+

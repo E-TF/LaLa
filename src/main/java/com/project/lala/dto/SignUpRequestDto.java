@@ -45,3 +45,4 @@ public class SignUpRequestDto {
 		return Member.createMember(loginId, password, nickname, name, email);
 	}
 }
+

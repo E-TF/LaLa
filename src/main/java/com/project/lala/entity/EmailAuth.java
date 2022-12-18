@@ -44,3 +44,4 @@ public class EmailAuth {
 		expired = true;
 	}
 }
+
