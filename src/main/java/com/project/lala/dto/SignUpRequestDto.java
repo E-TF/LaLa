@@ -1,6 +1,5 @@
 package com.project.lala.dto;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -10,7 +9,6 @@ import org.springframework.lang.Nullable;
 import com.project.lala.entity.Member;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -20,7 +18,6 @@ import lombok.ToString;
 @ToString
 public class SignUpRequestDto {
 
-	@Column(name = "login_id")
 	@Size(min = 6, max = 30, message = "아이디는 최소 6자 이상 이어야 합니다.")
 	@NotBlank(message = "아이디를 입력해주세요.")
 	private String loginId;
@@ -43,17 +40,6 @@ public class SignUpRequestDto {
 	private String email;
 
 	private String authToken;
-
-	@Builder
-	public SignUpRequestDto(String loginId, String password, String nickname, String name, String email,
-		String authToken) {
-		this.loginId = loginId;
-		this.password = password;
-		this.nickname = nickname;
-		this.name = name;
-		this.email = email;
-		this.authToken = authToken;
-	}
 
 	public Member createMember() {
 		return Member.createMember(loginId, password, nickname, name, email);

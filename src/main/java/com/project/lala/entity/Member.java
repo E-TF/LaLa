@@ -1,16 +1,11 @@
 package com.project.lala.entity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -61,20 +56,19 @@ public class Member {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate deletedAt;
 
-	@ElementCollection(fetch = FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
-	private List<MemberStatus> memberStatuses = new ArrayList<>();
+	private MemberStatus memberStatus;
 
 	@Builder
 	public Member(Long id, String loginId, String password, String nickname, String name, String email,
-		List<MemberStatus> memberStatuses) {
+		MemberStatus memberStatus) {
 		this.id = id;
 		this.loginId = loginId;
 		this.password = password;
 		this.nickname = nickname;
 		this.name = name;
 		this.email = email;
-		this.memberStatuses = Collections.singletonList(MemberStatus.UNEMAILAUTH);
+		this.memberStatus = memberStatus.UN_EMAIL_AUTH;
 		this.registeredAt = LocalDate.now();
 	}
 
@@ -90,7 +84,7 @@ public class Member {
 	}
 
 	public void addStatus(MemberStatus memberStatus) {
-		this.memberStatuses.add(memberStatus);
+		this.memberStatus = memberStatus;
 	}
 
 	public void updatePassword(String password) {

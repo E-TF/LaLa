@@ -24,7 +24,7 @@ public class SHA512EncryptionService implements EncryptionService {
 			}
 			return sb.toString();
 		} catch (NoSuchAlgorithmException e) {
-			return raw;
+			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
 }

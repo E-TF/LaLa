@@ -2,7 +2,6 @@ package com.project.lala.entity;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EmailAuth {
-	private static final long EMAIL_TOKEN_EXPIRATION_TIME_VALUE = 5L;
+	private static final long EMAIL_TOKEN_EXPIRATION_TIME_VALUE = 60 * 5;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,13 +26,10 @@ public class EmailAuth {
 
 	private String email;
 
-	@Column(name = "auth_token")
 	private String authToken;
 
-	@Column
 	private boolean expired;
 
-	@Column(name = "expired_at")
 	private LocalDateTime expiredAt;
 
 	@Builder
