@@ -22,9 +22,8 @@ public class EmailService {
 		mailMessage.setTo(email);
 		mailMessage.setSubject("회원가입 이메일 인증");
 		mailMessage.setText(
-			lala + "/api/members/confirm-email?email=" + email + "&authToken=" + authToken);
+			lala + "/sign/confirm-email?email=" + email + "&authToken=" + authToken);
 
 		javaMailSender.send(mailMessage);
 	}
 }
-

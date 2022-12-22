@@ -34,4 +34,3 @@ public class EmailAuthCustomRepositoryImpl implements EmailAuthCustomRepository 
 		return Optional.ofNullable(emailAuth);
 	}
 }
-

@@ -9,4 +9,3 @@ package com.project.lala.common.member;
 public enum MemberStatus {
 	UN_EMAIL_AUTH, EMAIL_AUTH, AUTH, DELETED
 }
-

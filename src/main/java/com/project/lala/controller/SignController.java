@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.lala.dto.SignUpRequestDto;
-import com.project.lala.dto.SignUpResponseDto;
+import com.project.lala.dto.SignUpRequest;
+import com.project.lala.dto.SignUpResponse;
 import com.project.lala.service.EmailService;
 import com.project.lala.service.MemberService;
 
@@ -17,22 +17,21 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/members")
+@RequestMapping("/sign")
 @RequiredArgsConstructor
-public class MemberController {
+public class SignController {
 
 	private final MemberService memberService;
 	private final EmailService emailService;
 
-	@PostMapping("/signup")
-	public void signup(@RequestBody SignUpRequestDto signUpRequestDto) {
-		log.info("members signup, signUpRequestDto: {}", signUpRequestDto);
-		SignUpResponseDto signUpResponseDto = memberService.signUp(signUpRequestDto);
+	@PostMapping("/register")
+	public void signup(@RequestBody SignUpRequest signUpRequest) {
+		log.info("members signup, signUpRequest: {}", signUpRequest);
+		SignUpResponse signUpResponse = memberService.signUp(signUpRequest);
 	}
 
 	@GetMapping("/confirm-email")
-	public void confirmEmail(@ModelAttribute SignUpRequestDto signUpRequestDto) {
-		memberService.confirmEmail(signUpRequestDto);
+	public void confirmEmail(@ModelAttribute SignUpRequest signUpRequest) {
+		memberService.confirmEmail(signUpRequest);
 	}
 }
-

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SignUpResponseDto {
+public class SignUpResponse {
 
 	private Long id;
 	private String loginId;
@@ -22,7 +22,7 @@ public class SignUpResponseDto {
 	private LocalDate registeredAt;
 
 	@Builder
-	public SignUpResponseDto(Long id, String loginId, String password, String nickname, String name, String email) {
+	public SignUpResponse(Long id, String loginId, String password, String nickname, String name, String email) {
 		this.id = id;
 		this.loginId = loginId;
 		this.password = password;
@@ -32,8 +32,8 @@ public class SignUpResponseDto {
 		this.registeredAt = LocalDate.now();
 	}
 
-	public static SignUpResponseDto signUpResponseDto(Member member) {
-		return SignUpResponseDto.builder()
+	public static SignUpResponse signUpResponse(Member member) {
+		return SignUpResponse.builder()
 			.id(member.getId())
 			.loginId(member.getLoginId())
 			.password(member.getPassword())
@@ -43,4 +43,3 @@ public class SignUpResponseDto {
 			.build();
 	}
 }
-

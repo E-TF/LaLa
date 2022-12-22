@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.lala.common.encrytion.EncryptionService;
-import com.project.lala.dto.SignUpRequestDto;
-import com.project.lala.dto.SignUpResponseDto;
+import com.project.lala.dto.SignUpRequest;
+import com.project.lala.dto.SignUpResponse;
 import com.project.lala.entity.EmailAuth;
 import com.project.lala.entity.Member;
 import com.project.lala.repository.EmailAuthRepository;
@@ -30,7 +30,7 @@ public class MemberService {
 	private final EncryptionService encryptionService;
 
 	@Transactional
-	public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
+	public SignUpResponse signUp(SignUpRequest requestDto) {
 		validateDuplicateByLoginId(requestDto.getLoginId());
 		validateDuplicateByEmail(requestDto.getEmail());
 
@@ -52,7 +52,7 @@ public class MemberService {
 
 		emailService.sendEmail(emailAuth.getEmail(), emailAuth.getAuthToken());
 
-		return SignUpResponseDto.builder()
+		return SignUpResponse.builder()
 			.id(member.getId())
 			.loginId(member.getLoginId())
 			.password(member.getPassword())
@@ -63,10 +63,10 @@ public class MemberService {
 	}
 
 	@Transactional
-	public void confirmEmail(SignUpRequestDto signUpRequestDto) {
-		EmailAuth emailAuth = emailAuthRepository.findValidAuthByEmail(signUpRequestDto.getEmail(),
-			signUpRequestDto.getAuthToken(), LocalDateTime.now()).orElseThrow(IllegalArgumentException::new);
-		Member member = memberRepository.findByEmail(signUpRequestDto.getEmail())
+	public void confirmEmail(SignUpRequest signUpRequest) {
+		EmailAuth emailAuth = emailAuthRepository.findValidAuthByEmail(signUpRequest.getEmail(),
+			signUpRequest.getAuthToken(), LocalDateTime.now()).orElseThrow(IllegalArgumentException::new);
+		Member member = memberRepository.findByEmail(signUpRequest.getEmail())
 			.orElseThrow(IllegalArgumentException::new);
 		emailAuth.useToken();
 	}
@@ -83,4 +83,3 @@ public class MemberService {
 		}
 	}
 }
-

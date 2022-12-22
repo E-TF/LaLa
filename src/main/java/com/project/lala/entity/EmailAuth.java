@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -18,10 +17,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EmailAuth {
-	private static final long EMAIL_TOKEN_EXPIRATION_TIME_VALUE = 60 * 5;
+	private static final long EMAIL_TOKEN_EXPIRATION_TIME_MINUTE_VALUE = 5;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue
 	private Long id;
 
 	private String email;
@@ -37,11 +36,10 @@ public class EmailAuth {
 		this.email = email;
 		this.authToken = authToken;
 		this.expired = expired;
-		this.expiredAt = LocalDateTime.now().plusMinutes(EMAIL_TOKEN_EXPIRATION_TIME_VALUE);
+		this.expiredAt = LocalDateTime.now().plusMinutes(EMAIL_TOKEN_EXPIRATION_TIME_MINUTE_VALUE);
 	}
 
 	public void useToken() {
 		expired = true;
 	}
 }
-

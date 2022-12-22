@@ -8,4 +8,3 @@ import com.project.lala.entity.EmailAuth;
 public interface EmailAuthCustomRepository {
 	Optional<EmailAuth> findValidAuthByEmail(String email, String authToken, LocalDateTime currentTime);
 }
-

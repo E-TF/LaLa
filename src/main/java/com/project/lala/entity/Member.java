@@ -29,7 +29,7 @@ public class Member {
 	@GeneratedValue
 	private Long id;
 
-	@Column(name = "login_id", nullable = false, length = 30)
+	@Column(nullable = false, length = 30)
 	private String loginId;
 
 	@Column(nullable = false)
@@ -44,15 +44,15 @@ public class Member {
 	@Column(nullable = false, length = 200)
 	private String email;
 
-	@Column(name = "registered_at", nullable = false)
+	@Column(nullable = false)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate registeredAt;
 
-	@Column(name = "updated_at")
+	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate updatedAt;
 
-	@Column(name = "deleted_at")
+	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate deletedAt;
 
@@ -60,15 +60,14 @@ public class Member {
 	private MemberStatus memberStatus;
 
 	@Builder
-	public Member(Long id, String loginId, String password, String nickname, String name, String email,
-		MemberStatus memberStatus) {
+	public Member(Long id, String loginId, String password, String nickname, String name, String email) {
 		this.id = id;
 		this.loginId = loginId;
 		this.password = password;
 		this.nickname = nickname;
 		this.name = name;
 		this.email = email;
-		this.memberStatus = memberStatus.UN_EMAIL_AUTH;
+		this.memberStatus = MemberStatus.UN_EMAIL_AUTH;
 		this.registeredAt = LocalDate.now();
 	}
 
@@ -103,4 +102,3 @@ public class Member {
 		this.email = email;
 	}
 }
-

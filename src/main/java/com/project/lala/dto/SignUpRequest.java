@@ -16,7 +16,7 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-public class SignUpRequestDto {
+public class SignUpRequest {
 
 	@Size(min = 6, max = 30, message = "아이디는 최소 6자 이상 이어야 합니다.")
 	@NotBlank(message = "아이디를 입력해주세요.")
@@ -45,4 +45,3 @@ public class SignUpRequestDto {
 		return Member.createMember(loginId, password, nickname, name, email);
 	}
 }
-

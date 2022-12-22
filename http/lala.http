@@ -1,5 +1,5 @@
 ### 회원가입
-POST http://localhost:8080/api/members/signup
+POST http://localhost:8080/sign/register
 Content-Type: application/json
 
 {

@@ -10,4 +10,3 @@ public class LalaApplication {
 		SpringApplication.run(LalaApplication.class, args);
 	}
 }
-

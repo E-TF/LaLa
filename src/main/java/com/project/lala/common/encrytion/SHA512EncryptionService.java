@@ -28,4 +28,3 @@ public class SHA512EncryptionService implements EncryptionService {
 		}
 	}
 }
-
