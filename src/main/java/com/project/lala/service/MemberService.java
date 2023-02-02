@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class MemberService {
 
 	private final MemberRepository memberRepository;
@@ -34,31 +33,29 @@ public class MemberService {
 		validateDuplicateByLoginId(requestDto.getLoginId());
 		validateDuplicateByEmail(requestDto.getEmail());
 
-		EmailAuth emailAuth = emailAuthRepository.save(
-			EmailAuth.builder()
-				.email(requestDto.getEmail())
-				.authToken(UUID.randomUUID().toString())
-				.expired(false)
-				.build());
-
-		Member member = memberRepository.save(
-			Member.builder()
-				.loginId(requestDto.getLoginId())
-				.password(encryptionService.encrypt(requestDto.getPassword()))
-				.nickname(requestDto.getNickname())
-				.name(requestDto.getName())
-				.email(requestDto.getEmail())
-				.build());
+		EmailAuth emailAuth = emailAuthRepository.save(getBuild(requestDto));
+		Member member = memberRepository.save(getEntity(requestDto));
 
 		emailService.sendEmail(emailAuth.getEmail(), emailAuth.getAuthToken());
 
-		return SignUpResponse.builder()
-			.id(member.getId())
-			.loginId(member.getLoginId())
-			.password(member.getPassword())
-			.nickname(member.getNickname())
-			.name(member.getName())
-			.email(member.getEmail())
+		return SignUpResponse.signUpResponse(member);
+	}
+
+	private Member getEntity(SignUpRequest requestDto) {
+		return Member.builder()
+			.loginId(requestDto.getLoginId())
+			.password(encryptionService.encrypt(requestDto.getPassword()))
+			.nickname(requestDto.getNickname())
+			.name(requestDto.getName())
+			.email(requestDto.getEmail())
+			.build();
+	}
+
+	private EmailAuth getBuild(SignUpRequest requestDto) {
+		return EmailAuth.builder()
+			.email(requestDto.getEmail())
+			.authToken(UUID.randomUUID().toString())
+			.expired(false)
 			.build();
 	}
 
