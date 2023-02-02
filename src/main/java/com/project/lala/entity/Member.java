@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "MEMBER")
+@Table(name = "MEMBERS")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
