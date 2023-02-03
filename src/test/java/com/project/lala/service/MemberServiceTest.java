@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -49,7 +48,7 @@ class MemberServiceTest {
 	@Test
 	@DisplayName("이미 같은 ID가 존재하는 경우 가입 실패")
 	public void dupIdExistsFail() {
-		Member savedResult = memberRepository.save(testBuilderId());
+		Member savedResult = memberRepository.save(memberBuilder());
 
 		Optional<Member> findMemberId = memberRepository.findById(savedResult.getId());
 
@@ -61,22 +60,14 @@ class MemberServiceTest {
 	@Test
 	@DisplayName("중복된 아이디가 없는 경우 가입 성공")
 	public void dupIdExistsSuccess() {
-		memberRepository.save(testBuilderId());
+		memberRepository.save(memberBuilder());
 
 		Optional<Member> savedMember = memberRepository.findById(1L);
 		assertEquals(1L, savedMember.get().getId());
 		assertEquals("test_email@email.test", savedMember.get().getEmail());
 	}
 
-	@Test
-	@DisplayName("가입 후 메일전송")
-	public void signUpThenSendMail() {
-		memberRepository.save(testBuilderId());
-		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-
-	}
-
-	private Member testBuilderId() {
+	private Member memberBuilder() {
 		return Member.builder()
 			.id(1L)
 			.loginId("test_id")
