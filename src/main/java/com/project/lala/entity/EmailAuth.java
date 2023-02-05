@@ -40,6 +40,11 @@ public class EmailAuth {
 	}
 
 	public void useToken() {
-		expired = true;
+		this.expired = true;
 	}
+
+	public void expiredToken() {
+		this.expired = true;
+	}
+
 }

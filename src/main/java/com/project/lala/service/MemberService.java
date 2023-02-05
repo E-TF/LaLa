@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.lala.common.encrytion.EncryptionService;
+import com.project.lala.common.exception.EmailDuplicationException;
+import com.project.lala.common.exception.ErrorCode;
+import com.project.lala.common.exception.MemberDuplicationException;
 import com.project.lala.dto.SignUpRequest;
 import com.project.lala.dto.SignUpResponse;
 import com.project.lala.entity.EmailAuth;
@@ -70,13 +73,13 @@ public class MemberService {
 
 	private void validateDuplicateByLoginId(String loginId) {
 		if (memberRepository.findByLoginId(loginId).isPresent()) {
-			throw new IllegalStateException("이미 존재하는 아이디 입니다.");
+			throw new MemberDuplicationException(ErrorCode.DUPLICATE_LOGIN_ID, "이미 존재하는 아이디 입니다.");
 		}
 	}
 
 	private void validateDuplicateByEmail(String email) {
 		if (memberRepository.findByEmail(email).isPresent()) {
-			throw new IllegalStateException("이미 존재하는 이메일 입니다.");
+			throw new EmailDuplicationException(ErrorCode.DUPLICATE_EMAIL, "이미 존재하는 이메일 입니다.");
 		}
 	}
 }
