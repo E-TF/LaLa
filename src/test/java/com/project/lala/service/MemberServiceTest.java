@@ -34,7 +34,7 @@ class MemberServiceTest {
 	@Test
 	@Transactional
 	@Rollback(false)
-	public void signUp() {
+	void signUp() {
 		Member joinMember = Member.createMember("test_id", encryptionService.encrypt("!@#test123"),
 			"test_nick", "test_name", "test_email@email.test");
 
@@ -47,8 +47,8 @@ class MemberServiceTest {
 
 	@Test
 	@DisplayName("이미 같은 ID가 존재하는 경우 가입 실패")
-	public void dupIdExistsFail() {
-		Member savedResult = memberRepository.save(memberBuilder());
+	void dupIdExistsFail() {
+		Member savedResult = memberRepository.save(getMember());
 
 		Optional<Member> findMemberId = memberRepository.findById(savedResult.getId());
 
@@ -59,17 +59,16 @@ class MemberServiceTest {
 
 	@Test
 	@DisplayName("중복된 아이디가 없는 경우 가입 성공")
-	public void dupIdExistsSuccess() {
-		memberRepository.save(memberBuilder());
+	void dupIdExistsSuccess() {
+		memberRepository.save(getMember());
 
 		Optional<Member> savedMember = memberRepository.findById(1L);
 		assertEquals(1L, savedMember.get().getId());
 		assertEquals("test_email@email.test", savedMember.get().getEmail());
 	}
 
-	private Member memberBuilder() {
+	private Member getMember() {
 		return Member.builder()
-			.id(1L)
 			.loginId("test_id")
 			.email("test_email@email.test")
 			.name("test_name")
