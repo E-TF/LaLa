@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.project.lala.common.member.MemberStatus;
+import com.project.lala.common.constant.MemberStatus;
 
 import lombok.AccessLevel;
 import lombok.Builder;

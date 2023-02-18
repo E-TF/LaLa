@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
+import org.springframework.stereotype.Repository;
+
 import com.project.lala.entity.EmailAuth;
 import com.project.lala.entity.QEmailAuth;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -12,9 +14,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Repository
 public class EmailAuthCustomRepositoryImpl implements EmailAuthCustomRepository {
 
-	JPAQueryFactory jpaQueryFactory;
+	private final JPAQueryFactory jpaQueryFactory;
 
 	public EmailAuthCustomRepositoryImpl(EntityManager em) {
 		this.jpaQueryFactory = new JPAQueryFactory(em);

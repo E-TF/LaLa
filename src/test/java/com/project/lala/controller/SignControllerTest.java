@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.project.lala.common.encrytion.EncryptionService;
+import com.project.lala.common.encrytion.SHA512EncryptionService;
 import com.project.lala.dto.SignUpResponse;
 import com.project.lala.service.MemberService;
 
@@ -28,17 +29,15 @@ class SignControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-	@Autowired
-	private EncryptionService encryptionService;
+
+	EncryptionService encryptionService = new SHA512EncryptionService();
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
 	@Test
 	@DisplayName("회원이 생성 될 경우 status 200 반환")
 	void memberSaveTest() throws Exception {
-
 		doReturn(responseMember()).when(memberService).signUp(any());
-
 		mockMvc.perform(
 				post("/sign/register")
 					.contentType(MediaType.APPLICATION_JSON)
@@ -47,7 +46,7 @@ class SignControllerTest {
 					.content(objectMapper.registerModule(new JavaTimeModule()).writeValueAsString(responseMember())))
 			.andExpect(status().isCreated());
 	}
-	
+
 	private SignUpResponse responseMember() {
 		return SignUpResponse.builder()
 			.loginId("login_id")
@@ -56,4 +55,5 @@ class SignControllerTest {
 			.password(encryptionService.encrypt("loginIdTest1234!@#"))
 			.build();
 	}
+
 }

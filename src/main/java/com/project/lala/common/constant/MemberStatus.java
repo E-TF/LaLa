@@ -1,4 +1,4 @@
-package com.project.lala.common.member;
+package com.project.lala.common.constant;
 
 /**
  * 이메일 인증: UN_EMAIL_AUTH

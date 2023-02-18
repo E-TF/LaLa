@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.lala.dto.SignUpRequest;
-import com.project.lala.dto.SignUpResponse;
 import com.project.lala.service.EmailService;
 import com.project.lala.service.MemberService;
 
@@ -30,11 +29,11 @@ public class SignController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public void signup(@RequestBody SignUpRequest signUpRequest) {
 		log.info("members signup, signUpRequest: {}", signUpRequest);
-		SignUpResponse signUpResponse = memberService.signUp(signUpRequest);
+		memberService.signUp(signUpRequest);
 	}
 
 	@GetMapping("/confirm-email")
 	public void confirmEmail(@ModelAttribute SignUpRequest signUpRequest) {
-		memberService.confirmEmail(signUpRequest);
+		emailService.confirmEmail(signUpRequest);
 	}
 }

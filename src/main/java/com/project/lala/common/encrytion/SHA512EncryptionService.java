@@ -3,9 +3,6 @@ package com.project.lala.common.encrytion;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class SHA512EncryptionService implements EncryptionService {
 	@Override
 	public String encrypt(String raw) {
@@ -13,7 +10,6 @@ public class SHA512EncryptionService implements EncryptionService {
 			MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
 
 			byte[] rawBytes = raw.getBytes();
-			messageDigest.reset();
 
 			byte[] digested = messageDigest.digest(rawBytes);
 			StringBuilder sb = new StringBuilder();

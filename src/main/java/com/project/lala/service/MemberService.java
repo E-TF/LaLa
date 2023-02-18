@@ -1,12 +1,12 @@
 package com.project.lala.service;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.lala.common.encrytion.EncryptionService;
+import com.project.lala.common.encrytion.SHA512EncryptionService;
 import com.project.lala.common.exception.EmailDuplicationException;
 import com.project.lala.common.exception.ErrorCode;
 import com.project.lala.common.exception.MemberDuplicationException;
@@ -29,7 +29,7 @@ public class MemberService {
 	private final EmailAuthRepository emailAuthRepository;
 
 	private final EmailService emailService;
-	private final EncryptionService encryptionService;
+	EncryptionService encryptionService = new SHA512EncryptionService();
 
 	@Transactional
 	public SignUpResponse signUp(SignUpRequest requestDto) {
@@ -60,15 +60,6 @@ public class MemberService {
 			.authToken(UUID.randomUUID().toString())
 			.expired(false)
 			.build();
-	}
-
-	@Transactional
-	public void confirmEmail(SignUpRequest signUpRequest) {
-		EmailAuth emailAuth = emailAuthRepository.findValidAuthByEmail(signUpRequest.getEmail(),
-			signUpRequest.getAuthToken(), LocalDateTime.now()).orElseThrow(IllegalArgumentException::new);
-		Member member = memberRepository.findByEmail(signUpRequest.getEmail())
-			.orElseThrow(IllegalArgumentException::new);
-		emailAuth.useToken();
 	}
 
 	private void validateDuplicateByLoginId(String loginId) {

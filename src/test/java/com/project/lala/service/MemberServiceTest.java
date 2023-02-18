@@ -13,23 +13,16 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.lala.common.encrytion.EncryptionService;
-import com.project.lala.dto.SignUpRequest;
+import com.project.lala.common.encrytion.SHA512EncryptionService;
 import com.project.lala.entity.Member;
 import com.project.lala.repository.MemberRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class MemberServiceTest {
 
-	private Member member;
-
-	@Autowired
-	private MemberService memberService;
-
 	@Autowired
 	private MemberRepository memberRepository;
-	private SignUpRequest signUpRequest;
-	@Autowired
-	private EncryptionService encryptionService;
+	private final EncryptionService encryptionService = new SHA512EncryptionService();
 
 	@Test
 	@Transactional
