@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.project.lala.dto.SignUpRequest;
 import com.project.lala.entity.EmailAuth;
 import com.project.lala.repository.EmailAuthRepository;
 
@@ -23,8 +22,6 @@ public class EmailService {
 	private final JavaMailSender javaMailSender;
 
 	private final EmailAuthRepository emailAuthRepository;
-
-	private final SignUpRequest signUpRequest;
 
 	@Async
 	public void sendEmail(String email, String authToken) {
