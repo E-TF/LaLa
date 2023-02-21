@@ -39,8 +39,12 @@ public class EmailAuth {
 		this.expiredAt = LocalDateTime.now().plusMinutes(EMAIL_TOKEN_EXPIRATION_TIME_MINUTE_VALUE);
 	}
 
-	public void useToken() {
-		this.expired = true;
+	public void useEmailAuthToken() {
+		if (!(EMAIL_TOKEN_EXPIRATION_TIME_MINUTE_VALUE > 5)) {
+			this.expired = true;
+		} else {
+			this.expired = false;
+		}
 	}
 
 	public void expiredToken() {

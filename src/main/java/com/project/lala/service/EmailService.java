@@ -24,6 +24,8 @@ public class EmailService {
 
 	private final EmailAuthRepository emailAuthRepository;
 
+	private final SignUpRequest signUpRequest;
+
 	@Async
 	public void sendEmail(String email, String authToken) {
 		String lala = "http://localhost:8080";
@@ -37,9 +39,9 @@ public class EmailService {
 	}
 
 	@Transactional
-	public void confirmEmail(SignUpRequest signUpRequest) {
-		EmailAuth emailAuth = emailAuthRepository.findValidAuthByEmail(signUpRequest.getEmail(),
-			signUpRequest.getAuthToken(), LocalDateTime.now()).orElseThrow(IllegalArgumentException::new);
-		emailAuth.useToken();
+	public void confirmEmail(String email, String authToken) {
+		EmailAuth emailAuth = emailAuthRepository.findValidAuthByEmail(email, authToken, LocalDateTime.now())
+			.orElseThrow(IllegalArgumentException::new);
+		emailAuth.useEmailAuthToken();
 	}
 }

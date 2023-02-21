@@ -72,14 +72,13 @@ public class Member {
 	}
 
 	public static Member createMember(String loginId, String password, String nickname, String name, String email) {
-		Member member = new Member();
-		member.loginId = loginId;
-		member.password = password;
-		member.nickname = nickname;
-		member.name = name;
-		member.email = email;
-		member.registeredAt = LocalDate.now();
-		return member;
+		return Member.builder()
+			.loginId(loginId)
+			.password(password)
+			.nickname(nickname)
+			.name(name)
+			.email(email)
+			.build();
 	}
 
 	public void addStatus(MemberStatus memberStatus) {
