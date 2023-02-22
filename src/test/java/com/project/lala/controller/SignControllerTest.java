@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -24,6 +25,9 @@ import com.project.lala.service.MemberService;
 @WebMvcTest(SignController.class)
 @AutoConfigureMockMvc
 class SignControllerTest {
+
+	@Autowired
+	private SignController signController;
 
 	@MockBean(MemberService.class)
 	private MemberService memberService;
@@ -40,7 +44,7 @@ class SignControllerTest {
 
 	@Test
 	@DisplayName("회원이 생성 될 경우 status 2xx 반환")
-	void memberSaveTest() throws Exception {
+	void signupTest() throws Exception {
 		doReturn(responseMember()).when(memberService).signUp(any());
 		mockMvc.perform(
 				post("/register")
@@ -49,6 +53,21 @@ class SignControllerTest {
 					.characterEncoding("UTF-8")
 					.content(objectMapper.registerModule(new JavaTimeModule()).writeValueAsString(responseMember())))
 			.andExpect(status().isCreated());
+	}
+
+	@Test
+	@DisplayName("이메일이 확인 된 경우 status 2xx 반환 ")
+	public void confirmEmailTest() throws Exception {
+		doNothing().when(emailService).confirmEmail(any(), any());
+
+		mockMvc = MockMvcBuilders.standaloneSetup(signController).build();
+
+		mockMvc.perform(get("/confirm-email")
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
+				.content(objectMapper.registerModule(new JavaTimeModule()).writeValueAsString(responseMember())))
+			.andExpect(status().isOk());
 	}
 
 	private SignUpResponse responseMember() {
