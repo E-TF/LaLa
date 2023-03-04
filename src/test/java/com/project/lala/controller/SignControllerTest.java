@@ -12,13 +12,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.project.lala.common.encrytion.EncryptionService;
 import com.project.lala.common.encrytion.SHA512EncryptionService;
-import com.project.lala.dto.SignUpResponse;
+import com.project.lala.dto.SignUpRequest;
 import com.project.lala.service.EmailService;
 import com.project.lala.service.MemberService;
 
@@ -27,56 +25,54 @@ import com.project.lala.service.MemberService;
 class SignControllerTest {
 
 	@Autowired
-	private SignController signController;
-
-	@MockBean(MemberService.class)
-	private MemberService memberService;
-
-	@MockBean(EmailService.class)
-	private EmailService emailService;
+	private MockMvc mockMvc;
 
 	@Autowired
-	private MockMvc mockMvc;
+	ObjectMapper objectMapper = new ObjectMapper();
+
+	@MockBean
+	private MemberService memberService;
+
+	@MockBean
+	private EmailService emailService;
 
 	EncryptionService encryptionService = new SHA512EncryptionService();
 
-	ObjectMapper objectMapper = new ObjectMapper();
-
 	@Test
-	@DisplayName("회원이 생성 될 경우 status 2xx 반환")
-	void signupTest() throws Exception {
-		doReturn(responseMember()).when(memberService).signUp(any());
+	@DisplayName("회원 가입 - 정상인 경우 status 201 반환")
+	void signup_success() throws Exception {
+
+		SignUpRequest request = SignUpRequest.builder()
+			.loginId("test_id")
+			.password(encryptionService.encrypt("!@#test123"))
+			.nickname("test_nick")
+			.name("test_name")
+			.email("test_email@email.test")
+			.build();
+
 		mockMvc.perform(
 				post("/register")
 					.contentType(MediaType.APPLICATION_JSON)
-					.accept(MediaType.APPLICATION_JSON)
-					.characterEncoding("UTF-8")
-					.content(objectMapper.registerModule(new JavaTimeModule()).writeValueAsString(responseMember())))
+					.content(objectMapper.writeValueAsString(request)))
 			.andExpect(status().isCreated());
+
+		verify(memberService, times(1)).signUp(any(SignUpRequest.class));
 	}
 
 	@Test
-	@DisplayName("이메일이 확인 된 경우 status 2xx 반환 ")
-	public void confirmEmailTest() throws Exception {
-		doNothing().when(emailService).confirmEmail(any(), any());
+	@DisplayName("이메일 인증 요청이 정상 확인 된 경우 status 200 반환 ")
+	void confirmEmail_success() throws Exception {
 
-		mockMvc = MockMvcBuilders.standaloneSetup(signController).build();
+		String email = "test_email@email.test";
+		String authToken = "test_token";
 
-		mockMvc.perform(get("/confirm-email")
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON)
-				.characterEncoding("UTF-8")
-				.content(objectMapper.registerModule(new JavaTimeModule()).writeValueAsString(responseMember())))
+		mockMvc.perform(
+				get("/confirm-email")
+					.param("email", email)
+					.param("authToken", authToken))
 			.andExpect(status().isOk());
-	}
 
-	private SignUpResponse responseMember() {
-		return SignUpResponse.builder()
-			.loginId("login_id")
-			.email("login_id_email@email.test")
-			.name("login_id_name")
-			.password(encryptionService.encrypt("loginIdTest1234!@#"))
-			.build();
+		verify(emailService, times(1)).confirmEmail(email, authToken);
 	}
 
 }

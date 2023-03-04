@@ -38,6 +38,4 @@ public class SignUpRequest {
 	@Pattern(regexp = "[a-zA-z0-9]+@[a-zA-z]+[.]+[a-zA-z.]+", message = "이메일 형식을 올바르게 입력해주세요.")
 	private String email;
 
-	private String authToken;
-
 }
