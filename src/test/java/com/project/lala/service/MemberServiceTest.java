@@ -1,71 +1,108 @@
 package com.project.lala.service;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.project.lala.common.encrytion.EncryptionService;
 import com.project.lala.common.encrytion.SHA512EncryptionService;
+import com.project.lala.common.exception.EmailDuplicationException;
+import com.project.lala.common.exception.MemberDuplicationException;
+import com.project.lala.dto.SignUpRequest;
+import com.project.lala.dto.SignUpResponse;
+import com.project.lala.entity.EmailAuth;
 import com.project.lala.entity.Member;
+import com.project.lala.repository.EmailAuthRepository;
 import com.project.lala.repository.MemberRepository;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
-	@Autowired
+	@Mock
 	private MemberRepository memberRepository;
+
+	@Mock
+	private EmailAuthRepository emailAuthRepository = Mockito.mock(EmailAuthRepository.class);
+
+	@Mock
+	private EmailService emailService;
+
+	@InjectMocks
+	private MemberService memberService;
+
 	private final EncryptionService encryptionService = new SHA512EncryptionService();
 
 	@Test
-	@Transactional
-	@Rollback(false)
-	void signUp() {
-		Member joinMember = Member.createMember("test_id", encryptionService.encrypt("!@#test123"),
-			"test_nick", "test_name", "test_email@email.test");
+	@DisplayName("회원가입 - 정상")
+	void signUp_success() {
+		SignUpRequest request = request();
 
-		Member signupMember = memberRepository.save(joinMember);
-		Optional<Member> findMemberId = memberRepository.findById(joinMember.getId());
+		when(memberRepository.findByLoginId(anyString())).thenReturn(Optional.empty());
+		when(memberRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+		when(emailAuthRepository.save(any(EmailAuth.class))).thenAnswer(invocation -> {
+			Object[] args = invocation.getArguments();
+			return args[0];
+		});
+		when(memberRepository.save(any())).thenReturn(Member.builder().id(1L).build());
 
-		assertThat(findMemberId.get().getId()).isEqualTo(joinMember.getId());
-		assertThat(findMemberId.get().getEmail()).isEqualTo(joinMember.getEmail());
+		SignUpResponse response = memberService.signUp(request);
+
+		assertNotNull(response);
+		assertNotNull(response.getId());
+		verify(memberRepository, times(1)).findByLoginId(request.getLoginId());
+		verify(memberRepository, times(1)).findByEmail(request.getEmail());
+		verify(emailAuthRepository, times(1)).save(any());
+		verify(memberRepository, times(1)).save(any());
+		verify(emailService, times(1)).sendEmail(eq(request.getEmail()), anyString());
 	}
 
 	@Test
-	@DisplayName("이미 같은 ID가 존재하는 경우 가입 실패")
-	void dupIdExistsFail() {
-		Member savedResult = memberRepository.save(getMember());
+	@DisplayName("회원가입 - 중복 아이디")
+	void signUp_duplicateLoginId() {
+		SignUpRequest request = request();
 
-		Optional<Member> findMemberId = memberRepository.findById(savedResult.getId());
+		when(memberRepository.findByLoginId(anyString())).thenReturn(Optional.of(Member.builder().build()));
 
-		assertThat(findMemberId).isNotNull();
-		assertThat(findMemberId.get().getId()).isNotNull();
-		assertThat(findMemberId.get().getId()).isEqualTo(savedResult.getId());
+		assertThrows(MemberDuplicationException.class, () -> memberService.signUp(request));
+		verify(memberRepository, times(1)).findByLoginId(request.getLoginId());
+		verify(memberRepository, times(0)).findByEmail(request.getEmail());
+		verify(emailAuthRepository, times(0)).save(any());
+		verify(memberRepository, times(0)).save(any());
+		verify(emailService, times(0)).sendEmail(anyString(), anyString());
 	}
 
 	@Test
-	@DisplayName("중복된 아이디가 없는 경우 가입 성공")
-	void dupIdExistsSuccess() {
-		memberRepository.save(getMember());
+	@DisplayName("회원가입 - 중복 이메일")
+	void signUp_duplicateEmail() {
+		SignUpRequest request = request();
 
-		Optional<Member> savedMember = memberRepository.findById(1L);
-		assertEquals(1L, savedMember.get().getId());
-		assertEquals("test_email@email.test", savedMember.get().getEmail());
+		when(memberRepository.findByLoginId(anyString())).thenReturn(Optional.empty());
+		when(memberRepository.findByEmail(anyString())).thenReturn(Optional.of(Member.builder().build()));
+
+		assertThrows(EmailDuplicationException.class, () -> memberService.signUp(request));
+		verify(memberRepository, times(1)).findByLoginId(request.getLoginId());
+		verify(memberRepository, times(1)).findByEmail(request.getEmail());
+		verify(emailAuthRepository, times(0)).save(any());
+		verify(memberRepository, times(0)).save(any());
+		verify(emailService, times(0)).sendEmail(anyString(), anyString());
 	}
 
-	private Member getMember() {
-		return Member.builder()
+	private SignUpRequest request() {
+		return SignUpRequest.builder()
 			.loginId("test_id")
-			.email("test_email@email.test")
-			.name("test_name")
 			.password(encryptionService.encrypt("!@#test123"))
+			.nickname("test_nick")
+			.name("test_name")
+			.email("test_email@email.test")
 			.build();
 	}
 

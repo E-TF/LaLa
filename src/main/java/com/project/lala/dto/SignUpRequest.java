@@ -6,15 +6,14 @@ import javax.validation.constraints.Size;
 
 import org.springframework.lang.Nullable;
 
-import com.project.lala.entity.Member;
-
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
 @ToString
 public class SignUpRequest {
 
@@ -41,7 +40,4 @@ public class SignUpRequest {
 
 	private String authToken;
 
-	public Member createMember() {
-		return Member.createMember(loginId, password, nickname, name, email);
-	}
 }
