@@ -40,11 +40,7 @@ public class EmailAuth {
 	}
 
 	public void useEmailAuthToken() {
-		if (!(EMAIL_TOKEN_EXPIRATION_TIME_MINUTE_VALUE > 5)) {
-			this.expired = true;
-		} else {
-			this.expired = false;
-		}
+		this.expired = true;
 	}
 
 	public void expiredToken() {
