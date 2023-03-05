@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -30,8 +31,7 @@ class MemberServiceTest {
 	@Mock
 	private MemberRepository memberRepository;
 
-	@Mock
-	private EmailAuthRepository emailAuthRepository = Mockito.mock(EmailAuthRepository.class);
+	private final EmailAuthRepository emailAuthRepository = Mockito.mock(EmailAuthRepository.class);
 
 	@Mock
 	private EmailService emailService;
@@ -45,24 +45,32 @@ class MemberServiceTest {
 	@DisplayName("회원가입 - 정상")
 	void signUp_success() {
 		SignUpRequest request = request();
+		Member member = Member.builder().id(1L).build();
 
 		when(memberRepository.findByLoginId(anyString())).thenReturn(Optional.empty());
 		when(memberRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-		when(emailAuthRepository.save(any(EmailAuth.class))).thenAnswer(invocation -> {
-			Object[] args = invocation.getArguments();
-			return args[0];
-		});
-		when(memberRepository.save(any())).thenReturn(Member.builder().id(1L).build());
+		when(emailAuthRepository.save(any(EmailAuth.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
+		when(memberRepository.save(any())).thenReturn(member);
 
 		SignUpResponse response = memberService.signUp(request);
 
 		assertNotNull(response);
 		assertNotNull(response.getId());
+
 		verify(memberRepository, times(1)).findByLoginId(request.getLoginId());
 		verify(memberRepository, times(1)).findByEmail(request.getEmail());
-		verify(emailAuthRepository, times(1)).save(any());
-		verify(memberRepository, times(1)).save(any());
+		verify(emailAuthRepository, times(1)).save(any(EmailAuth.class));
+		verify(memberRepository, times(1)).save(any(Member.class));
 		verify(emailService, times(1)).sendEmail(eq(request.getEmail()), anyString());
+
+		ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
+		verify(memberRepository).save(captor.capture());
+
+		Member savedMember = captor.getValue();
+		assertEquals(request.getLoginId(), savedMember.getLoginId());
+		assertEquals(request.getNickname(), savedMember.getNickname());
+		assertEquals(request.getName(), savedMember.getName());
+		assertEquals(request.getEmail(), savedMember.getEmail());
 	}
 
 	@Test
@@ -75,8 +83,8 @@ class MemberServiceTest {
 		assertThrows(MemberDuplicationException.class, () -> memberService.signUp(request));
 		verify(memberRepository, times(1)).findByLoginId(request.getLoginId());
 		verify(memberRepository, times(0)).findByEmail(request.getEmail());
-		verify(emailAuthRepository, times(0)).save(any());
-		verify(memberRepository, times(0)).save(any());
+		verify(emailAuthRepository, times(0)).save(any(EmailAuth.class));
+		verify(memberRepository, times(0)).save(any(Member.class));
 		verify(emailService, times(0)).sendEmail(anyString(), anyString());
 	}
 
@@ -91,8 +99,8 @@ class MemberServiceTest {
 		assertThrows(EmailDuplicationException.class, () -> memberService.signUp(request));
 		verify(memberRepository, times(1)).findByLoginId(request.getLoginId());
 		verify(memberRepository, times(1)).findByEmail(request.getEmail());
-		verify(emailAuthRepository, times(0)).save(any());
-		verify(memberRepository, times(0)).save(any());
+		verify(emailAuthRepository, times(0)).save(any(EmailAuth.class));
+		verify(memberRepository, times(0)).save(any(Member.class));
 		verify(emailService, times(0)).sendEmail(anyString(), anyString());
 	}
 

@@ -6,14 +6,14 @@ import javax.validation.constraints.Size;
 
 import org.springframework.lang.Nullable;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
-@Builder
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class SignUpRequest {
 
@@ -38,4 +38,12 @@ public class SignUpRequest {
 	@Pattern(regexp = "[a-zA-z0-9]+@[a-zA-z]+[.]+[a-zA-z.]+", message = "이메일 형식을 올바르게 입력해주세요.")
 	private String email;
 
+	@Builder
+	public SignUpRequest(String loginId, String password, @Nullable String nickname, String name, String email) {
+		this.loginId = loginId;
+		this.password = password;
+		this.nickname = nickname;
+		this.name = name;
+		this.email = email;
+	}
 }
