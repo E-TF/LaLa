@@ -4,8 +4,7 @@ spring:
     database: mysql
     hibernate:
       naming:
-        strategy: org.hibernate.cfg.ImprovedNamingStrategy
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
       ddl-auto: create
     show-sql: 'true' # 콘솔에 SQL 출력 여부
     properties:
@@ -41,4 +40,3 @@ server:
       charset: utf-8
       enabled: true
       force: true
-      
