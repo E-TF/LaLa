@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -13,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "EMAIL_AUTH")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EmailAuth {
