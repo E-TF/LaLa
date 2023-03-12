@@ -1,0 +1,11 @@
+### 회원가입
+POST http://localhost:8080/register
+Content-Type: application/json
+
+{
+  "loginId": "http_test",
+  "password": "password_test!!@@##",
+  "nickname": "http_nickname",
+  "name": "http_name",
+  "email": "testleehan@gmail.com"
+}
