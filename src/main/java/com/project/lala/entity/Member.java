@@ -100,4 +100,8 @@ public class Member {
 	public void updateEmail(String email) {
 		this.email = email;
 	}
+
+	public boolean matchPassword(String password) {
+		return this.password.equals(password);
+	}
 }
