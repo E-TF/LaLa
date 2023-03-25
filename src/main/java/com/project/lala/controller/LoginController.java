@@ -1,13 +1,15 @@
 package com.project.lala.controller;
 
+import static com.project.lala.common.constant.LoginRole.*;
+
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.lala.common.constant.SessionConst;
 import com.project.lala.dto.LoginRequest;
 import com.project.lala.service.LoginService;
 
@@ -22,13 +24,15 @@ public class LoginController {
 	private final LoginService loginService;
 
 	@PostMapping("/login")
-	public void login(@RequestBody @Valid LoginRequest loginRequest) {
-		loginService.login(loginRequest);
+	public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest, HttpSession session) {
+		loginService.login(loginRequest, MEMBER);
+		session.setAttribute(MEMBER.name(), loginRequest.loginId());
+		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/logout")
-	public String logout(HttpSession session) {
-		session.removeAttribute(SessionConst.LOGIN_MEMBER);
-		return "redirect:/";
+	public ResponseEntity<Void> logout(HttpSession session) {
+		session.invalidate();
+		return ResponseEntity.ok().build();
 	}
 }

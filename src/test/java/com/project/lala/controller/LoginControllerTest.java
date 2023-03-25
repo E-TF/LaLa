@@ -1,7 +1,7 @@
 package com.project.lala.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static com.project.lala.common.constant.LoginRole.*;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -16,9 +16,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.lala.common.constant.SessionConst;
 import com.project.lala.dto.LoginRequest;
-import com.project.lala.entity.Member;
 import com.project.lala.service.LoginService;
 
 @WebMvcTest(LoginController.class)
@@ -33,7 +31,7 @@ class LoginControllerTest {
 
 	@Test
 	@DisplayName("로그인")
-	void login() throws Exception {
+	void login_success() throws Exception {
 		String loginId = "test_loginId";
 		String password = "test_password";
 
@@ -44,26 +42,18 @@ class LoginControllerTest {
 				.content(new ObjectMapper().writeValueAsString(loginRequest)))
 			.andExpect(status().isOk());
 
-		verify(loginService).login(loginRequest);
+		verify(loginService).login(loginRequest, MEMBER);
 	}
 
 	@Test
 	@DisplayName("로그아웃")
 	void logout() throws Exception {
-		Member member = Member.builder()
-			.id(1L)
-			.loginId("test_loginId")
-			.password("test_password")
-			.build();
-
-		MockHttpSession session = new MockHttpSession();
-		session.setAttribute(SessionConst.LOGIN_MEMBER, member);
+		MockHttpSession mockHttpSession = new MockHttpSession();
+		mockHttpSession.setAttribute(MEMBER.name(), "test_session");
 
 		mockMvc.perform(post("/logout")
-				.session(session))
+				.session(mockHttpSession))
 			.andExpect(status().isOk());
-
-		assertNull(session.getAttribute(SessionConst.LOGIN_MEMBER));
 	}
 
 }

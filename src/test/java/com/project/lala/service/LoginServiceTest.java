@@ -1,5 +1,6 @@
 package com.project.lala.service;
 
+import static com.project.lala.common.constant.LoginRole.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -14,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.project.lala.common.constant.SessionConst;
 import com.project.lala.common.encrytion.EncryptionService;
 import com.project.lala.common.exception.AlreadyLoggedInException;
 import com.project.lala.common.exception.InvalidPasswordException;
@@ -49,6 +49,7 @@ class LoginServiceTest {
 			.id(1L)
 			.loginId(loginId)
 			.password(encryptedPassword)
+			.role(MEMBER)
 			.build();
 
 		LoginRequest loginRequest = new LoginRequest(loginId, password);
@@ -56,9 +57,9 @@ class LoginServiceTest {
 		when(encryptionService.encrypt(password)).thenReturn(encryptedPassword);
 		when(memberRepository.findByLoginIdAndPassword(loginId, encryptedPassword)).thenReturn(Optional.of(member));
 
-		loginService.login(loginRequest);
+		loginService.login(loginRequest, member.getRole());
 
-		verify(httpSession).setAttribute(SessionConst.LOGIN_MEMBER, member);
+		verify(httpSession).setAttribute(MEMBER.name(), member);
 	}
 
 	@Test
@@ -72,7 +73,7 @@ class LoginServiceTest {
 		when(encryptionService.encrypt(password)).thenReturn(password);
 		when(memberRepository.findByLoginIdAndPassword(loginId, password)).thenReturn(Optional.empty());
 
-		assertThrows(NonExistentMemberException.class, () -> loginService.login(loginRequest));
+		assertThrows(NonExistentMemberException.class, () -> loginService.login(loginRequest, MEMBER));
 
 		verify(memberRepository).findByLoginIdAndPassword(loginId, password);
 	}
@@ -88,6 +89,7 @@ class LoginServiceTest {
 			.id(1L)
 			.loginId(loginId)
 			.password(password)
+			.role(GUEST)
 			.build();
 
 		LoginRequest loginRequest = new LoginRequest(loginId, password);
@@ -95,7 +97,7 @@ class LoginServiceTest {
 		when(encryptionService.encrypt(password)).thenReturn(encryptedPassword);
 		when(memberRepository.findByLoginIdAndPassword(loginId, encryptedPassword)).thenReturn(Optional.of(member));
 
-		assertThrows(InvalidPasswordException.class, () -> loginService.login(loginRequest));
+		assertThrows(InvalidPasswordException.class, () -> loginService.login(loginRequest, MEMBER));
 	}
 
 	@Test
@@ -109,18 +111,19 @@ class LoginServiceTest {
 			.id(1L)
 			.loginId(loginId)
 			.password(encryptedPassword)
+			.role(MEMBER)
 			.build();
 
 		LoginRequest loginRequest = new LoginRequest(loginId, password);
 
 		when(encryptionService.encrypt(password)).thenReturn(encryptedPassword);
 		when(memberRepository.findByLoginIdAndPassword(loginId, encryptedPassword)).thenReturn(Optional.of(member));
-		when(httpSession.getAttribute(SessionConst.LOGIN_MEMBER)).thenReturn(member);
+		when(httpSession.getAttribute(MEMBER.name())).thenReturn(member);
 
-		assertThrows(AlreadyLoggedInException.class, () -> loginService.login(loginRequest));
+		assertThrows(AlreadyLoggedInException.class, () -> loginService.login(loginRequest, member.getRole()));
 
 		verify(memberRepository).findByLoginIdAndPassword(loginId, encryptedPassword);
-		verify(httpSession).getAttribute(SessionConst.LOGIN_MEMBER);
+		verify(httpSession).getAttribute(MEMBER.name());
 	}
 
 	@Test
@@ -131,7 +134,7 @@ class LoginServiceTest {
 
 		LoginRequest loginRequest = new LoginRequest(loginId, password);
 
-		assertThrows(IllegalArgumentException.class, () -> loginService.login(loginRequest));
+		assertThrows(IllegalArgumentException.class, () -> loginService.login(loginRequest, MEMBER));
 	}
 
 	@Test
@@ -142,18 +145,14 @@ class LoginServiceTest {
 
 		LoginRequest loginRequest = new LoginRequest(loginId, password);
 
-		assertThrows(IllegalArgumentException.class, () -> loginService.login(loginRequest));
+		assertThrows(IllegalArgumentException.class, () -> loginService.login(loginRequest, MEMBER));
 	}
 
 	@Test
 	@DisplayName("아이디, 비밀번호를 모두 입력하지 않은 경우")
 	void login_all_empty() {
-		String loginId = "";
-		String password = "";
-
-		LoginRequest loginRequest = new LoginRequest(loginId, password);
-
-		assertThrows(IllegalArgumentException.class, () -> loginService.login(loginRequest));
+		LoginRequest loginRequest = new LoginRequest("", "");
+		assertThrows(IllegalArgumentException.class, () -> loginService.login(loginRequest, MEMBER));
 	}
 
 	@Test
@@ -165,11 +164,10 @@ class LoginServiceTest {
 			.password("test_password")
 			.build();
 
-		httpSession.setAttribute(SessionConst.LOGIN_MEMBER, member);
+		httpSession.setAttribute(MEMBER.name(), member);
+		loginService.logout();
 
-		loginService.logout(httpSession);
-
-		assertNull(httpSession.getAttribute(SessionConst.LOGIN_MEMBER));
+		assertNull(httpSession.getAttribute(MEMBER.name()));
 	}
 
 }
