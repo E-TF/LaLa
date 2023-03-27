@@ -1,6 +1,6 @@
 package com.project.lala.controller;
 
-import static com.project.lala.common.constant.LoginRole.*;
+import static com.project.lala.common.constant.UserType.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -27,6 +27,7 @@ public class LoginController {
 	public ResponseEntity<Void> login(@RequestBody @Valid LoginRequest loginRequest, HttpSession session) {
 		loginService.login(loginRequest, MEMBER);
 		session.setAttribute(MEMBER.name(), loginRequest.loginId());
+		session.setMaxInactiveInterval(60 * 10);
 		return ResponseEntity.ok().build();
 	}
 

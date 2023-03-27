@@ -1,6 +1,6 @@
 package com.project.lala.controller;
 
-import static com.project.lala.common.constant.LoginRole.*;
+import static com.project.lala.common.constant.UserType.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;

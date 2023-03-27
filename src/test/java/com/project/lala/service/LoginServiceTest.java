@@ -1,6 +1,6 @@
 package com.project.lala.service;
 
-import static com.project.lala.common.constant.LoginRole.*;
+import static com.project.lala.common.constant.UserType.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -165,7 +165,7 @@ class LoginServiceTest {
 			.build();
 
 		httpSession.setAttribute(MEMBER.name(), member);
-		loginService.logout();
+		loginService.logout(MEMBER);
 
 		assertNull(httpSession.getAttribute(MEMBER.name()));
 	}

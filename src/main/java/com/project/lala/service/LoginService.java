@@ -1,16 +1,12 @@
 package com.project.lala.service;
 
-import static com.project.lala.common.constant.LoginRole.*;
-
 import javax.servlet.http.HttpSession;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.project.lala.common.constant.LoginRole;
+import com.project.lala.common.constant.UserType;
 import com.project.lala.common.encrytion.EncryptionService;
 import com.project.lala.common.exception.AlreadyLoggedInException;
-import com.project.lala.common.exception.InvalidPasswordException;
 import com.project.lala.common.exception.NonExistentMemberException;
 import com.project.lala.dto.LoginRequest;
 import com.project.lala.entity.Member;
@@ -28,7 +24,7 @@ public class LoginService {
 	private final HttpSession httpSession;
 	private final EncryptionService encryptionService;
 
-	public void login(LoginRequest loginRequest, LoginRole role) {
+	public void login(LoginRequest loginRequest, UserType role) {
 		String encryptedPassword = encryptionService.encrypt(loginRequest.password());
 
 		Member loginMember = memberRepository.findByLoginIdAndPassword(loginRequest.loginId(), encryptedPassword)
@@ -42,21 +38,16 @@ public class LoginService {
 
 		checkAlreadyLoggedIn(role);
 
-		if (!loginMember.matchPassword(encryptedPassword)) {
-			throw new InvalidPasswordException();
-		}
-
 		httpSession.setAttribute(role.name(), loginMember);
 		log.info("loginMember={}", loginMember);
 	}
 
-	public ResponseEntity<Void> logout() {
-		httpSession.removeAttribute(MEMBER.name());
-		return ResponseEntity.ok().build();
+	public void logout(UserType role) {
+		httpSession.removeAttribute(role.name());
 	}
 
-	private void checkAlreadyLoggedIn(LoginRole loginRole) {
-		if (loginRole == null || httpSession.getAttribute(loginRole.name()) != null) {
+	private void checkAlreadyLoggedIn(UserType role) {
+		if (role == null || httpSession.getAttribute(role.name()) != null) {
 			throw new AlreadyLoggedInException();
 		}
 	}
