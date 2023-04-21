@@ -71,18 +71,10 @@ public class Member {
 		this.registeredAt = LocalDate.now();
 	}
 
-	public static Member createMember(String loginId, String password, String nickname, String name, String email) {
-		return Member.builder()
-			.loginId(loginId)
-			.password(password)
-			.nickname(nickname)
-			.name(name)
-			.email(email)
-			.build();
-	}
-
-	public void addStatus(MemberStatus memberStatus) {
-		this.memberStatus = memberStatus;
+	public void update(String password, String nickname) {
+		this.updatePassword(password);
+		this.updateNickname(nickname);
+		this.updatedAt = LocalDate.now();
 	}
 
 	public void updatePassword(String password) {
@@ -93,11 +85,4 @@ public class Member {
 		this.nickname = nickname;
 	}
 
-	public void updateName(String name) {
-		this.name = name;
-	}
-
-	public void updateEmail(String email) {
-		this.email = email;
-	}
 }
