@@ -59,6 +59,10 @@ public class Member {
 	@Enumerated(EnumType.STRING)
 	private MemberStatus memberStatus;
 
+	public boolean matchPassword(String password) {
+		return this.password.equals(password);
+	}
+
 	@Builder
 	public Member(Long id, String loginId, String password, String nickname, String name, String email) {
 		this.id = id;

@@ -17,7 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.project.lala.common.encrytion.EncryptionService;
 import com.project.lala.common.encrytion.SHA512EncryptionService;
 import com.project.lala.common.exception.EmailDuplicationException;
+import com.project.lala.common.exception.InvalidPasswordException;
 import com.project.lala.common.exception.MemberDuplicationException;
+import com.project.lala.common.exception.MemberNotFoundException;
 import com.project.lala.dto.SignUpRequest;
 import com.project.lala.dto.SignUpResponse;
 import com.project.lala.entity.EmailAuth;
@@ -102,6 +104,56 @@ class MemberServiceTest {
 		verify(emailAuthRepository, times(0)).save(any(EmailAuth.class));
 		verify(memberRepository, times(0)).save(any(Member.class));
 		verify(emailService, times(0)).sendEmail(anyString(), anyString());
+	}
+
+	@Test
+	@DisplayName("회원탈퇴 - 정상")
+	void deleteMember_success() {
+		Long memberId = 1L;
+		String password = "password";
+		Member member = Member.builder()
+			.id(memberId)
+			.password(encryptionService.encrypt(password))
+			.build();
+
+		when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+
+		memberService.deleteMember(memberId, password);
+
+		verify(memberRepository, times(1)).findById(memberId);
+		verify(memberRepository, times(1)).deleteById(memberId);
+	}
+
+	@Test
+	@DisplayName("회원탈퇴 - 잘못된 비밀번호")
+	void deleteMember_invalidPassword() {
+		Long memberId = 1L;
+		String password = "password";
+		Member member = Member.builder()
+			.id(memberId)
+			.password(encryptionService.encrypt("wrong_password"))
+			.build();
+
+		when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+
+		assertThrows(InvalidPasswordException.class, () -> memberService.deleteMember(memberId, password));
+
+		verify(memberRepository, times(1)).findById(memberId);
+		verify(memberRepository, times(0)).deleteById(memberId);
+	}
+
+	@Test
+	@DisplayName("회원탈퇴 - 존재하지 않는 회원")
+	void deleteMember_notFound() {
+		Long memberId = 1L;
+		String password = "password";
+
+		when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+		assertThrows(MemberNotFoundException.class, () -> memberService.deleteMember(memberId, password));
+
+		verify(memberRepository, times(1)).findById(memberId);
+		verify(memberRepository, times(0)).deleteById(memberId);
 	}
 
 	private SignUpRequest request() {
