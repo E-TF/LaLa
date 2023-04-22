@@ -9,7 +9,9 @@ import com.project.lala.common.encrytion.EncryptionService;
 import com.project.lala.common.encrytion.SHA512EncryptionService;
 import com.project.lala.common.exception.EmailDuplicationException;
 import com.project.lala.common.exception.ErrorCode;
+import com.project.lala.common.exception.InvalidPasswordException;
 import com.project.lala.common.exception.MemberDuplicationException;
+import com.project.lala.common.exception.MemberNotFoundException;
 import com.project.lala.dto.SignUpRequest;
 import com.project.lala.dto.SignUpResponse;
 import com.project.lala.entity.EmailAuth;
@@ -42,6 +44,17 @@ public class MemberService {
 		emailService.sendEmail(emailAuth.getEmail(), emailAuth.getAuthToken());
 
 		return SignUpResponse.signUpResponse(member);
+	}
+
+	@Transactional
+	public void deleteMember(Long id, String password) {
+		Member member = memberRepository.findById(id).orElseThrow(MemberNotFoundException::new);
+		String encryptedPassword = encryptionService.encrypt(password);
+
+		if (!member.matchPassword(encryptedPassword)) {
+			throw new InvalidPasswordException();
+		}
+		memberRepository.deleteById(id);
 	}
 
 	private Member getEntity(SignUpRequest requestDto) {
