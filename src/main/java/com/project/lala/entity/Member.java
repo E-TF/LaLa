@@ -72,17 +72,13 @@ public class Member {
 	}
 
 	public void update(String password, String nickname) {
-		this.updatePassword(password);
-		this.updateNickname(nickname);
+		if (password != null) {
+			this.password = password;
+		}
+		if (nickname != null) {
+			this.nickname = nickname;
+		}
 		this.updatedAt = LocalDate.now();
-	}
-
-	public void updatePassword(String password) {
-		this.password = password;
-	}
-
-	public void updateNickname(String nickname) {
-		this.nickname = nickname;
 	}
 
 }

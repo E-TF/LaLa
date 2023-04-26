@@ -1,6 +1,5 @@
 package com.project.lala.service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import javax.persistence.EntityNotFoundException;
@@ -48,25 +47,13 @@ public class MemberService {
 	}
 
 	@Transactional
-	public Member updateMember(Long memberId, String password, String nickname) {
+	public void updateMember(Long memberId, String password, String nickname) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 회원입니다."));
 
-		Optional.ofNullable(password)
-			.filter(memberPassword -> !memberPassword.isEmpty())
-			.ifPresent(member::updatePassword);
+		member.update(encryptionService.encrypt(password), nickname);
 
-		Optional.ofNullable(nickname)
-			.filter(memberNickname -> !memberNickname.isEmpty())
-			.ifPresent(member::updateNickname);
-
-		if (password != null) {
-			member.update(encryptionService.encrypt(password), nickname);
-		} else {
-			member.update(member.getPassword(), nickname);
-		}
-
-		return memberRepository.save(member);
+		memberRepository.save(member);
 	}
 
 	private Member getEntity(SignUpRequest requestDto) {
