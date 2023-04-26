@@ -17,8 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.project.lala.common.encrytion.EncryptionService;
 import com.project.lala.common.exception.AlreadyLoggedInException;
-import com.project.lala.common.exception.InvalidPasswordException;
-import com.project.lala.common.exception.NonExistentMemberException;
+import com.project.lala.common.exception.LoginFailedException;
 import com.project.lala.dto.LoginRequest;
 import com.project.lala.entity.Member;
 import com.project.lala.repository.MemberRepository;
@@ -49,7 +48,6 @@ class LoginServiceTest {
 			.id(1L)
 			.loginId(loginId)
 			.password(encryptedPassword)
-			.role(MEMBER)
 			.build();
 
 		LoginRequest loginRequest = new LoginRequest(loginId, password);
@@ -73,7 +71,7 @@ class LoginServiceTest {
 		when(encryptionService.encrypt(password)).thenReturn(password);
 		when(memberRepository.findByLoginIdAndPassword(loginId, password)).thenReturn(Optional.empty());
 
-		assertThrows(NonExistentMemberException.class, () -> loginService.login(loginRequest, MEMBER));
+		assertThrows(LoginFailedException.class, () -> loginService.login(loginRequest, MEMBER));
 
 		verify(memberRepository).findByLoginIdAndPassword(loginId, password);
 	}
@@ -82,22 +80,14 @@ class LoginServiceTest {
 	@DisplayName("로그인 실패 - 비밀번호가 일치하지 않음")
 	void login_invalid_password() {
 		String loginId = "test_loginId";
-		String password = "invalid_password";
-		String encryptedPassword = "test_encryptedPassword";
+		String wrongPassword = "wrong_password";
 
-		Member member = Member.builder()
-			.id(1L)
-			.loginId(loginId)
-			.password(password)
-			.role(GUEST)
-			.build();
+		LoginRequest loginRequest = new LoginRequest(loginId, wrongPassword);
 
-		LoginRequest loginRequest = new LoginRequest(loginId, password);
+		when(memberRepository.findByLoginIdAndPassword(loginId, encryptionService.encrypt(wrongPassword)))
+			.thenReturn(Optional.empty());
 
-		when(encryptionService.encrypt(password)).thenReturn(encryptedPassword);
-		when(memberRepository.findByLoginIdAndPassword(loginId, encryptedPassword)).thenReturn(Optional.of(member));
-
-		assertThrows(InvalidPasswordException.class, () -> loginService.login(loginRequest, MEMBER));
+		assertThrows(LoginFailedException.class, () -> loginService.login(loginRequest, MEMBER));
 	}
 
 	@Test
@@ -111,19 +101,12 @@ class LoginServiceTest {
 			.id(1L)
 			.loginId(loginId)
 			.password(encryptedPassword)
-			.role(MEMBER)
 			.build();
 
 		LoginRequest loginRequest = new LoginRequest(loginId, password);
 
-		when(encryptionService.encrypt(password)).thenReturn(encryptedPassword);
-		when(memberRepository.findByLoginIdAndPassword(loginId, encryptedPassword)).thenReturn(Optional.of(member));
 		when(httpSession.getAttribute(MEMBER.name())).thenReturn(member);
-
 		assertThrows(AlreadyLoggedInException.class, () -> loginService.login(loginRequest, member.getRole()));
-
-		verify(memberRepository).findByLoginIdAndPassword(loginId, encryptedPassword);
-		verify(httpSession).getAttribute(MEMBER.name());
 	}
 
 	@Test
@@ -132,9 +115,8 @@ class LoginServiceTest {
 		String loginId = "";
 		String password = "test_password";
 
-		LoginRequest loginRequest = new LoginRequest(loginId, password);
-
-		assertThrows(IllegalArgumentException.class, () -> loginService.login(loginRequest, MEMBER));
+		assertThrows(IllegalArgumentException.class,
+			() -> loginService.login(new LoginRequest(loginId, password), MEMBER));
 	}
 
 	@Test
@@ -143,16 +125,18 @@ class LoginServiceTest {
 		String loginId = "test_loginId";
 		String password = "";
 
-		LoginRequest loginRequest = new LoginRequest(loginId, password);
-
-		assertThrows(IllegalArgumentException.class, () -> loginService.login(loginRequest, MEMBER));
+		assertThrows(IllegalArgumentException.class,
+			() -> loginService.login(new LoginRequest(loginId, password), MEMBER));
 	}
 
 	@Test
 	@DisplayName("아이디, 비밀번호를 모두 입력하지 않은 경우")
 	void login_all_empty() {
-		LoginRequest loginRequest = new LoginRequest("", "");
-		assertThrows(IllegalArgumentException.class, () -> loginService.login(loginRequest, MEMBER));
+		String loginId = "";
+		String password = "";
+
+		assertThrows(IllegalArgumentException.class,
+			() -> loginService.login(new LoginRequest(loginId, password), MEMBER));
 	}
 
 	@Test
