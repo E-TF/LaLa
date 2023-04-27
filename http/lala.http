@@ -22,3 +22,13 @@ Content-Type: application/json
 ### 로그아웃
 POST http://localhost:8080/logout
 Content-Type: application/json
+
+### 회원 정보 수정
+PUT http://localhost:8080/members/2
+Content-Type: application/json
+
+{
+  "loginId": "http_test",
+  "password": "change_password!!@@##",
+  "nickname": "change_nickname"
+}

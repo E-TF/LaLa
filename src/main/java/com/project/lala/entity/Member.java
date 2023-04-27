@@ -74,5 +74,15 @@ public class Member {
 		this.memberStatus = MemberStatus.UN_EMAIL_AUTH;
 		this.registeredAt = LocalDate.now();
 	}
+  
+	public void update(String password, String nickname) {
+		if (password != null) {
+			this.password = password;
+		}
+		if (nickname != null) {
+			this.nickname = nickname;
+		}
+		this.updatedAt = LocalDate.now();
+	}
 
 }

@@ -2,6 +2,8 @@ package com.project.lala.service;
 
 import java.util.UUID;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,16 @@ public class MemberService {
 		emailService.sendEmail(emailAuth.getEmail(), emailAuth.getAuthToken());
 
 		return SignUpResponse.signUpResponse(member);
+	}
+
+	@Transactional
+	public void updateMember(Long memberId, String password, String nickname) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 회원입니다."));
+
+		member.update(encryptionService.encrypt(password), nickname);
+
+		memberRepository.save(member);
 	}
 
 	private Member getEntity(SignUpRequest requestDto) {
