@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.project.lala.common.constant.MemberStatus;
+import com.project.lala.common.constant.UserType;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -59,6 +60,8 @@ public class Member {
 	@Enumerated(EnumType.STRING)
 	private MemberStatus memberStatus;
 
+	private UserType role;
+
 	@Builder
 	public Member(Long id, String loginId, String password, String nickname, String name, String email) {
 		this.id = id;
@@ -67,10 +70,11 @@ public class Member {
 		this.nickname = nickname;
 		this.name = name;
 		this.email = email;
+		this.role = UserType.MEMBER;
 		this.memberStatus = MemberStatus.UN_EMAIL_AUTH;
 		this.registeredAt = LocalDate.now();
 	}
-
+  
 	public void update(String password, String nickname) {
 		if (password != null) {
 			this.password = password;
