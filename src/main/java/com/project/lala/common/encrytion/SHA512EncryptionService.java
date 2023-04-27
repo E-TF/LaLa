@@ -3,6 +3,12 @@ package com.project.lala.common.encrytion;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
 public class SHA512EncryptionService implements EncryptionService {
 	@Override
 	public String encrypt(String raw) {
