@@ -20,6 +20,7 @@ import com.project.lala.common.encrytion.EncryptionService;
 import com.project.lala.common.encrytion.SHA512EncryptionService;
 import com.project.lala.entity.Member;
 import com.project.lala.repository.MemberRepository;
+import com.project.lala.service.MemberService;
 
 @WebMvcTest(MemberController.class)
 @AutoConfigureMockMvc
@@ -33,6 +34,9 @@ class MemberControllerTest {
 
 	@MockBean
 	private MemberRepository memberRepository;
+
+	@MockBean
+	private MemberService memberService;
 
 	EncryptionService encryptionService = new SHA512EncryptionService();
 
