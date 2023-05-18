@@ -51,7 +51,6 @@ class MemberControllerTest {
 			"testEmail@email.com");
 
 		MockHttpSession session = new MockHttpSession();
-		doNothing().when(authService).authorize(session, memberId);
 
 		when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
 		MemberDeleteRequest request = new MemberDeleteRequest(password);
@@ -66,24 +65,7 @@ class MemberControllerTest {
 		memberRepository.delete(member);
 
 		verify(memberRepository, times(1)).delete(member);
-		verify(authService, times(1)).authorize(session, member.getId());
-		verify(memberService, times(1)).deleteMember(member.getId(), member.getPassword());
-	}
-
-	@Test
-	@DisplayName("회원탈퇴 - 비밀번호 불일치")
-	void deleteMember_passwordMismatch() throws Exception {
-		String password = "!@testPassword1234";
-		Member member = new Member(1L, "testLoginId", password, "testNickname", "testName", "testEmail@email.com");
-
-		when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-		mockMvc.perform(delete("/members/{id}", 1L)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content("{\"password\": \"" + "wrongPassword" + "\"}"))
-			.andExpect(status().isBadRequest());
-
-		verify(memberRepository, times(0)).delete(member);
-		verify(memberService, times(0)).deleteMember(member.getId(), member.getPassword());
+		verify(memberService, times(1)).deleteMember(member.getId());
 	}
 
 }

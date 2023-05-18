@@ -59,10 +59,6 @@ public class Member {
 	@Enumerated(EnumType.STRING)
 	private MemberStatus memberStatus;
 
-	public boolean matchPassword(String password) {
-		return this.password.equals(password);
-	}
-
 	@Builder
 	public Member(Long id, String loginId, String password, String nickname, String name, String email) {
 		this.id = id;
@@ -75,33 +71,4 @@ public class Member {
 		this.registeredAt = LocalDate.now();
 	}
 
-	public static Member createMember(String loginId, String password, String nickname, String name, String email) {
-		return Member.builder()
-			.loginId(loginId)
-			.password(password)
-			.nickname(nickname)
-			.name(name)
-			.email(email)
-			.build();
-	}
-
-	public void addStatus(MemberStatus memberStatus) {
-		this.memberStatus = memberStatus;
-	}
-
-	public void updatePassword(String password) {
-		this.password = password;
-	}
-
-	public void updateNickname(String nickname) {
-		this.nickname = nickname;
-	}
-
-	public void updateName(String name) {
-		this.name = name;
-	}
-
-	public void updateEmail(String email) {
-		this.email = email;
-	}
 }

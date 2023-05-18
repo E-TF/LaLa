@@ -26,15 +26,13 @@ public class AuthService {
 			throw new AuthorizationException("로그인 정보가 올바르지 않습니다.");
 		}
 
-		session.setAttribute("member", member);
+		session.setAttribute("memberId", member.getId());
 	}
 
-	public void authorize(HttpSession session, Long id) throws AuthorizationException {
-		Member member = (Member)session.getAttribute("member");
-
-		if (member == null || !member.getId().equals(id)) {
-			throw new AuthorizationException("해당 정보에 대한 권한이 없습니다.");
-		}
+	public void authorize(Long id) throws AuthorizationException {
+		memberRepository.findById(id)
+			.filter(member -> member.getId().equals(id))
+			.orElseThrow(() -> new AuthorizationException("해당 정보에 대한 권한이 없습니다."));
 	}
 
 }
