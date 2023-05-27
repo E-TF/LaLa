@@ -51,11 +51,12 @@ class MemberControllerTest {
 			"testEmail@email.com");
 
 		MockHttpSession session = new MockHttpSession();
+		session.setAttribute("memberId", member.getId());
 
 		when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
 		MemberDeleteRequest request = new MemberDeleteRequest(password);
 
-		mockMvc.perform(delete("/members/{id}", member.getId())
+		mockMvc.perform(delete("/members")
 				.session(session)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(request))
